@@ -1,0 +1,437 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#09090d">
+<title>ZEN IP TRACKER ULTRA</title>
+<style>
+:root{
+  --bg:#08080c;--panel:#111117;--red:#ff3045;
+  --text:#f6f6fa;--muted:#92929f;--line:#292932;
+  --green:#65f2a5;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+font-family:Inter,system-ui,-apple-system,Arial,sans-serif}
+button,input{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+button:disabled{opacity:.5;cursor:wait}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;
+background:radial-gradient(ellipse at 50% 0%,#4c111b55,transparent 55%);
+z-index:-1}
+header{height:72px;padding:0 5%;display:flex;align-items:center;
+justify-content:space-between;border-bottom:1px solid var(--line);
+background:#09090deF;position:sticky;top:0;z-index:10;
+backdrop-filter:blur(16px)}
+.brand{font-size:19px;font-weight:950;letter-spacing:1.5px}
+.brand span{color:var(--red)}
+.live{font-size:10px;color:var(--green);letter-spacing:1px;
+border:1px solid #28563d;border-radius:30px;padding:8px 11px}
+main{width:min(1000px,92%);margin:38px auto 60px}
+.hero{text-align:center;margin:35px 0}
+.eyebrow{font-size:10px;letter-spacing:4px;color:var(--red);font-weight:900}
+h1{font-size:clamp(35px,8vw,62px);letter-spacing:-2.5px;margin:13px 0}
+h1 span{color:var(--red);text-shadow:0 0 28px #ff30452c}
+.subtitle{font-size:13px;line-height:1.9;color:var(--muted)}
+.panel{background:linear-gradient(145deg,#16161e,#0e0e13);
+border:1px solid var(--line);border-radius:18px;padding:22px;
+margin:16px 0;box-shadow:0 15px 40px #0003}
+.section-title{font-size:13px;font-weight:850;letter-spacing:.7px;margin-bottom:18px}
+label{display:block;font-size:11px;color:#c9c9d3;margin-bottom:9px}
+.search{display:flex;gap:10px}
+input{min-width:0;width:100%;padding:15px;background:#09090d;
+color:white;border:1px solid #34343e;border-radius:10px;outline:none}
+input:focus{border-color:var(--red)}
+.btn{padding:13px 17px;border:1px solid transparent;border-radius:10px;
+background:var(--red);color:white;font-size:12px;font-weight:850;
+transition:.2s}
+.btn:hover{filter:brightness(1.15);transform:translateY(-1px)}
+.btn.secondary{background:#202029;border-color:#393943}
+.note{font-size:11px;color:var(--muted);line-height:1.8;margin:12px 0 0}
+.message{font-size:12px;color:var(--muted);margin-top:15px;line-height:1.8}
+.message.error{color:#ff8290}
+.results{display:none}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.stat{background:#0a0a0f;border:1px solid #282832;border-radius:12px;padding:15px;min-width:0}
+.stat small{display:block;color:var(--muted);font-size:10px;margin-bottom:9px}
+.stat strong{font-size:13px;overflow-wrap:anywhere;line-height:1.6;display:block}
+.mapbox{border:1px solid var(--line);padding:7px;background:#09090d;border-radius:14px}
+#map{display:block;width:100%;height:330px;border:0;border-radius:9px;background:#12121a}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.actions .btn{flex:1}
+.mapnote{font-size:10px;color:var(--muted);line-height:1.8;margin-top:14px}
+footer{text-align:center;color:#6d6d79;padding:28px 15px 38px;
+border-top:1px solid var(--line);font-size:10px;line-height:2}
+.hidden{display:none!important}
+
+/* PREMIUM INTRO OVERLAY */
+#intro{position:fixed;inset:0;z-index:9999;display:flex;
+align-items:center;justify-content:center;overflow:hidden;background:#07070b;
+transition:opacity .65s,visibility .65s}
+#intro.closed{opacity:0;visibility:hidden;pointer-events:none}
+.intro-grid{position:absolute;inset:0;background-image:
+linear-gradient(#ff30450c 1px,transparent 1px),
+linear-gradient(90deg,#ff30450c 1px,transparent 1px);
+background-size:32px 32px}
+.intro-glow{position:absolute;width:400px;height:400px;border-radius:50%;
+background:#9b10251c;filter:blur(80px)}
+.scanline{position:absolute;inset:0;pointer-events:none;
+background:linear-gradient(transparent,#ff304511,transparent);
+animation:scan 4s linear infinite}
+.intro-content{position:relative;text-align:center;width:min(390px,88%);padding:20px}
+.intro-brand{font-weight:950;letter-spacing:3px;font-size:25px}
+.intro-brand span{color:var(--red)}
+.intro-sub{font-size:10px;letter-spacing:3px;color:#9999a6;margin-top:9px}
+.radar{position:relative;width:180px;height:180px;margin:32px auto 25px;
+border:1px solid #ff304566;border-radius:50%;
+background:repeating-radial-gradient(circle,transparent 0 24px,#ff304525 25px 26px);
+box-shadow:0 0 45px #ff30451a,inset 0 0 30px #ff30451a}
+.radar:before,.radar:after{content:"";position:absolute;background:#ff30454c}
+.radar:before{height:1px;left:0;right:0;top:50%}
+.radar:after{width:1px;top:0;bottom:0;left:50%}
+.radar-sweep{position:absolute;inset:0;border-radius:50%;
+background:conic-gradient(from 0deg,transparent 65%,#ff30456b);
+animation:rotate 3s linear infinite}
+.radar-center{position:absolute;top:calc(50% - 4px);left:calc(50% - 4px);
+width:8px;height:8px;border-radius:50%;background:var(--red);
+box-shadow:0 0 15px var(--red)}
+.radar-dot{position:absolute;left:70%;top:30%;width:6px;height:6px;
+background:#ff6676;border-radius:50%;box-shadow:0 0 12px var(--red);
+animation:pulse 1.5s infinite}
+.intro-content h2{font-size:19px;letter-spacing:2px;margin:15px 0 8px}
+#intro-status{color:#ff6474;font-size:10px;letter-spacing:2px;min-height:16px}
+.progress{height:3px;background:#282832;margin:20px 0 0;overflow:hidden}
+#progress-bar{height:100%;width:0;background:var(--red);
+box-shadow:0 0 15px var(--red);transition:width .12s}
+.intro-small{font-size:9px;color:#6d6d79;letter-spacing:1.5px;margin:15px 0 22px}
+#enter{width:100%;display:none}
+@keyframes rotate{to{transform:rotate(360deg)}}
+@keyframes pulse{50%{transform:scale(1.8);opacity:.4}}
+@keyframes scan{from{transform:translateY(-100%)}to{transform:translateY(100%)}}
+@media(max-width:650px){
+ header{height:65px;padding:0 4%}.brand{font-size:15px}
+ .live{font-size:9px;padding:7px}
+ main{margin:25px auto 40px}.hero{margin:30px 0}
+ .panel{padding:16px;border-radius:14px}
+ .search{flex-direction:column}.search .btn{width:100%}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .stat{padding:12px}.stat strong{font-size:12px}
+ #map{height:275px}.actions{flex-direction:column}
+ .actions .btn{width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<!-- INTRO OVERLAY -->
+<div id="intro">
+  <div class="intro-grid"></div>
+  <div class="intro-glow"></div>
+  <div class="scanline"></div>
+  <div class="intro-content">
+    <div class="intro-brand">ZEN <span>IP TRACKER</span></div>
+    <div class="intro-sub">NETWORK INTELLIGENCE SYSTEM</div>
+    <div class="radar">
+      <div class="radar-sweep"></div>
+      <div class="radar-center"></div>
+      <div class="radar-dot"></div>
+    </div>
+    <h2>SYSTEM INITIALIZATION</h2>
+    <div id="intro-status">INITIALIZING INTERFACE...</div>
+    <div class="progress"><div id="progress-bar"></div></div>
+    <div class="intro-small">SECURE INTERFACE · ULTRA EDITION</div>
+    <button class="btn" id="enter" type="button">ACCESS DASHBOARD ↗</button>
+  </div>
+</div>
+
+<header>
+  <div class="brand">ZEN <span>IP TRACKER</span></div>
+  <div class="live">● INTERFACE READY</div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="eyebrow">NETWORK INTELLIGENCE / 01</div>
+    <h1>IP <span>TRACKER</span></h1>
+    <div class="subtitle">
+      Network lookup interface with geolocation visualization.<br>
+      Cari informasi IP dalam satu dashboard premium.
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="section-title">⌕ &nbsp; IP ADDRESS LOOKUP</div>
+    <label for="ip">MASUKKAN ALAMAT IP</label>
+    <div class="search">
+      <input id="ip" type="text" placeholder="Kosong = IP publik kamu sendiri"
+        autocomplete="off" spellcheck="false">
+      <button class="btn" id="lookup" type="button">LACAK IP ↗</button>
+    </div>
+    <div class="actions">
+      <button class="btn secondary" id="myip" type="button">CEK IP SAYA</button>
+      <button class="btn secondary" id="reset" type="button">RESET</button>
+    </div>
+    <p class="note">Contoh IP untuk pengujian: 8.8.8.8. Pencarian menggunakan layanan geolokasi IP publik. Jangan masukkan data rahasia.</p>
+    <div class="message" id="message" role="status">System ready. Menunggu pencarian.</div>
+  </section>
+
+  <section id="results" class="results">
+    <div class="panel">
+      <div class="section-title">◈ &nbsp; TARGET INTELLIGENCE</div>
+      <div class="grid">
+        <div class="stat"><small>IP ADDRESS</small><strong id="r-ip">—</strong></div>
+        <div class="stat"><small>IP VERSION</small><strong id="r-type">—</strong></div>
+        <div class="stat"><small>COUNTRY</small><strong id="r-country">—</strong></div>
+        <div class="stat"><small>CITY</small><strong id="r-city">—</strong></div>
+        <div class="stat"><small>REGION</small><strong id="r-region">—</strong></div>
+        <div class="stat"><small>POSTAL CODE</small><strong id="r-postal">—</strong></div>
+        <div class="stat"><small>ISP / PROVIDER</small><strong id="r-isp">—</strong></div>
+        <div class="stat"><small>ORGANIZATION</small><strong id="r-org">—</strong></div>
+        <div class="stat"><small>ASN</small><strong id="r-as">—</strong></div>
+        <div class="stat"><small>TIMEZONE</small><strong id="r-timezone">—</strong></div>
+        <div class="stat"><small>LATITUDE</small><strong id="r-lat">—</strong></div>
+        <div class="stat"><small>LONGITUDE</small><strong id="r-lon">—</strong></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="section-title">⌖ &nbsp; GEOLOCATION MAP</div>
+      <div class="mapbox">
+        <iframe id="map" title="Peta perkiraan lokasi IP"
+          loading="lazy" referrerpolicy="no-referrer"
+          src="about:blank"></iframe>
+      </div>
+      <div class="actions">
+        <button class="btn" id="google" type="button" disabled>BUKA GOOGLE MAPS ↗</button>
+        <button class="btn secondary" id="copy" type="button">SALIN LAPORAN</button>
+      </div>
+      <p class="mapnote">
+        MAP DATA · Lokasi berdasarkan basis data geolokasi IP dan dapat meleset.
+        Peta kosong jika koordinat tidak tersedia. Ini bukan pelacakan GPS langsung.
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  ZEN IP TRACKER ULTRA · NETWORK LOOKUP INTERFACE<br>
+  Gunakan secara bertanggung jawab. Data lokasi IP merupakan perkiraan.
+</footer>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+const intro = $("intro");
+let report = "";
+let mapUrl = "";
+let requestController = null;
+
+function message(text, error = false) {
+  $("message").textContent = text;
+  $("message").className = "message" + (error ? " error" : "");
+}
+
+function put(id, value) {
+  $(id).textContent =
+    value === null || value === undefined || value === "" ? "Tidak tersedia" : value;
+}
+
+function validIP(ip) {
+  // Validasi IPv4
+  const parts = ip.split(".");
+  if (parts.length === 4 && parts.every(part =>
+    /^\d{1,3}$/.test(part) && Number(part) >= 0 && Number(part) <= 255
+  )) return true;
+
+  // Validasi IPv6 melalui parser URL browser
+  if (ip.includes(":")) {
+    try {
+      const parsed = new URL("http://[" + ip + "]/");
+      return parsed.hostname.length > 2;
+    } catch (_) {}
+  }
+  return false;
+}
+
+function clearResults() {
+  $("results").style.display = "none";
+  $("map").src = "about:blank";
+  mapUrl = "";
+  report = "";
+  $("google").disabled = true;
+}
+
+async function lookup(overrideIP) {
+  const ip = overrideIP !== undefined ? overrideIP : $("ip").value.trim();
+
+  if (ip && !validIP(ip)) {
+    message("Format IP tidak valid. Periksa alamat IPv4 atau IPv6.", true);
+    return;
+  }
+
+  if (requestController) requestController.abort();
+  requestController = new AbortController();
+
+  const btn = $("lookup");
+  btn.disabled = true;
+  $("myip").disabled = true;
+  btn.textContent = "MEMERIKSA...";
+  clearResults();
+  message("Menghubungkan ke layanan geolokasi...");
+
+  try {
+    const url = "https://ipwho.is/" + (ip ? encodeURIComponent(ip) : "");
+    const response = await fetch(url, {
+      signal: requestController.signal
+    });
+
+    if (!response.ok) throw new Error("Layanan API merespons dengan status " + response.status);
+
+    const d = await response.json();
+    if (!d.success) throw new Error(d.message || "Informasi IP tidak ditemukan.");
+
+    const connection = d.connection || {};
+    const timezone = d.timezone || {};
+    const lat = Number(d.latitude);
+    const lon = Number(d.longitude);
+
+    const hasCoords = d.latitude !== null && d.longitude !== null &&
+      d.latitude !== "" && d.longitude !== "" &&
+      Number.isFinite(lat) && Number.isFinite(lon) &&
+      lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180;
+
+    put("r-ip", d.ip);
+    put("r-type", d.type);
+    put("r-country", (d.flag && d.flag.emoji ? d.flag.emoji + " " : "") + (d.country || ""));
+    put("r-city", d.city);
+    put("r-region", d.region);
+    put("r-postal", d.postal);
+    put("r-isp", connection.isp);
+    put("r-org", connection.org);
+    put("r-as", connection.asn);
+    put("r-timezone", timezone.id);
+    put("r-lat", hasCoords ? lat.toFixed(5) : null);
+    put("r-lon", hasCoords ? lon.toFixed(5) : null);
+
+    if (hasCoords) {
+      const coords = lat + "," + lon;
+      $("map").src = "https://maps.google.com/maps?q=" +
+        encodeURIComponent(coords) + "&z=10&output=embed";
+      mapUrl = "https://www.google.com/maps?q=" + encodeURIComponent(coords);
+      $("google").disabled = false;
+    }
+
+    report = [
+      "ZEN IP TRACKER ULTRA",
+      "IP Address: " + (d.ip || "—"),
+      "IP Version: " + (d.type || "—"),
+      "Country: " + (d.country || "—"),
+      "City: " + (d.city || "—"),
+      "Region: " + (d.region || "—"),
+      "Postal Code: " + (d.postal || "—"),
+      "ISP: " + (connection.isp || "—"),
+      "Organization: " + (connection.org || "—"),
+      "ASN: " + (connection.asn || "—"),
+      "Timezone: " + (timezone.id || "—"),
+      "Coordinates: " + (hasCoords ? lat + ", " + lon : "Unavailable"),
+      "Note: IP geolocation is approximate."
+    ].join("\n");
+
+    $("results").style.display = "block";
+    message("✓ Pencarian selesai. Informasi berhasil dimuat.");
+  } catch (error) {
+    if (error.name === "AbortError") return;
+    message("Gagal memuat data: " + error.message +
+      " Periksa koneksi atau coba lagi nanti.", true);
+  } finally {
+    btn.disabled = false;
+    $("myip").disabled = false;
+    btn.textContent = "LACAK IP ↗";
+  }
+}
+
+$("lookup").addEventListener("click", () => lookup());
+$("myip").addEventListener("click", () => {
+  $("ip").value = "";
+  lookup("");
+});
+$("ip").addEventListener("keydown", event => {
+  if (event.key === "Enter") lookup();
+});
+
+$("reset").addEventListener("click", () => {
+  if (requestController) requestController.abort();
+  $("ip").value = "";
+  clearResults();
+  message("Form berhasil direset. Masukkan IP untuk memulai.");
+});
+
+$("google").addEventListener("click", () => {
+  if (mapUrl) window.open(mapUrl, "_blank", "noopener,noreferrer");
+});
+
+$("copy").addEventListener("click", async () => {
+  if (!report) return;
+  try {
+    await navigator.clipboard.writeText(report);
+    $("copy").textContent = "✓ LAPORAN TERSALIN";
+    setTimeout(() => $("copy").textContent = "SALIN LAPORAN", 1800);
+  } catch (_) {
+    // Fallback untuk browser yang tidak menyediakan Clipboard API
+    const area = document.createElement("textarea");
+    area.value = report;
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    try {
+      const ok = document.execCommand("copy");
+      message(ok ? "Laporan berhasil disalin." :
+        "Clipboard tidak didukung. Salin laporan secara manual.", !ok);
+    } catch (_) {
+      message("Clipboard tidak didukung oleh browser ini.", true);
+    }
+    area.remove();
+  }
+});
+
+// Intro overlay dengan progress animasi
+const stages = [
+  [25, "INITIALIZING INTERFACE..."],
+  [50, "LOADING NETWORK MODULE..."],
+  [75, "CALIBRATING RADAR..."],
+  [100, "SYSTEM READY // ACCESS GRANTED"]
+];
+let progress = 0;
+const bar = $("progress-bar");
+const status = $("intro-status");
+const enter = $("enter");
+
+const timer = setInterval(() => {
+  progress = Math.min(progress + 5, 100);
+  bar.style.width = progress + "%";
+
+  const stage = stages.find(item => progress <= item[0]) || stages[3];
+  status.textContent = stage[1];
+
+  if (progress >= 100) {
+    clearInterval(timer);
+    enter.style.display = "block";
+  }
+}, 65);
+
+enter.addEventListener("click", () => {
+  intro.classList.add("closed");
+});
+
+// Hormati preferensi animasi dan jangan mulai pencarian tanpa tindakan pengguna.
+</script>
+</body>
+</html>
